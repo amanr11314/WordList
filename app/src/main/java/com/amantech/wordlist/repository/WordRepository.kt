@@ -13,9 +13,8 @@ class WordRepository(application: Application) {
     val mAllWords: LiveData<List<WordEntity>>
 
     init {
-        //MAJOR ISSUE: CANNOT RECEIVE DB INSTANCE FROM WordRoomDatabase class to Repository class
         val db = WordRoomDatabase.getDatabase(application)
-        mWordDao = db!!.wordDao()
+        mWordDao = db.wordDao()
         mAllWords = mWordDao.allWords;
     }
 
@@ -26,7 +25,6 @@ class WordRepository(application: Application) {
     class insertAsyncTask(val mAsyncTaskDao: WordDao) : AsyncTask<WordEntity, Void, Boolean>() {
         override fun doInBackground(vararg params: WordEntity): Boolean {
             mAsyncTaskDao.insert(params[0])
-            //retrun true on success
             return true
         }
     }

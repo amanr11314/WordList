@@ -5,7 +5,6 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amantech.wordlist.database.WordEntity
@@ -13,6 +12,7 @@ import com.amantech.wordlist.viewmodel.WordViewModel
 import com.amantech.wordlist.viewmodel.WordViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import java.sql.Time
 
 
 class MainActivity : AppCompatActivity() {
@@ -27,8 +27,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        //init viewmodel obejct
-        //use of viewmodelfactory to pass parameter to viewmodel
+        //init View Model obejct
+        //use of view model factory to pass parameter to viewmodel
         mWordViewModelFactory = WordViewModelFactory(application)
         mWordViewModel =
             ViewModelProvider(this, mWordViewModelFactory).get(WordViewModel::class.java)
@@ -40,7 +40,9 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         //Add click listener to FAB
+        //TODO: INSERT WORD INTO DB OPERATION ON FAB CLICK
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
+
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
