@@ -8,10 +8,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.amantech.wordlist.database.WordEntity
 
-class WordListAdapter(val context: Context) :
+class WordListAdapter(val context: Context, var mWords: List<WordEntity>) :
     RecyclerView.Adapter<WordListAdapter.WordViewHolder>() {
 
-    private lateinit var mWords: List<WordEntity>
+//    private lateinit var mWords: List<WordEntity>
 
     class WordViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val wordItemView: TextView = view.findViewById(R.id.textView)

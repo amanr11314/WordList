@@ -1,34 +1,57 @@
 package com.amantech.wordlist
 
-import android.content.Context
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.amantech.wordlist.database.WordEntity
+import com.amantech.wordlist.viewmodel.WordViewModel
+import com.amantech.wordlist.viewmodel.WordViewModelFactory
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
+
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var mWordViewModel: WordViewModel
+    private lateinit var mWordViewModelFactory: WordViewModelFactory
+    lateinit var recyclerView: RecyclerView
+    lateinit var adapter: WordListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-        //Error in this part
-//        val adapter = WordListAdapter(this as Context)
-//        recyclerView.adapter = adapter
-//        recyclerView.layoutManager = LinearLayoutManager(this as Context)
-        //Fix error
+        //init viewmodel obejct
+        //use of viewmodelfactory to pass parameter to viewmodel
+        mWordViewModelFactory = WordViewModelFactory(application)
+        mWordViewModel =
+            ViewModelProvider(this, mWordViewModelFactory).get(WordViewModel::class.java)
 
+        //Init UI
+        recyclerView = findViewById(R.id.recyclerView)
+        adapter = WordListAdapter(this, listOf<WordEntity>())
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        //Add click listener to FAB
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
+
+        //observer for livedata for wordlist
+        mWordViewModel.allWords.observe(this, {
+            adapter.setWords(it!!)
+        })
+
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.

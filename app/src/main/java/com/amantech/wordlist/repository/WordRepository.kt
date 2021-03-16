@@ -8,21 +8,19 @@ import com.amantech.wordlist.database.WordEntity
 import com.amantech.wordlist.database.WordRoomDatabase
 
 
-class WordRepository(val application: Application) {
-    private lateinit var _mWordDao: WordDao
-    private lateinit var _mAllWords: LiveData<List<WordEntity>>
+class WordRepository(application: Application) {
+    private val mWordDao: WordDao
+    val mAllWords: LiveData<List<WordEntity>>
 
     init {
-        val db: WordRoomDatabase = WordRoomDatabase.getDatabase(application)!!
-        _mWordDao = db.wordDao()
-        _mAllWords = _mWordDao.allWords;
+        //MAJOR ISSUE: CANNOT RECEIVE DB INSTANCE FROM WordRoomDatabase class to Repository class
+        val db = WordRoomDatabase.getDatabase(application)
+        mWordDao = db!!.wordDao()
+        mAllWords = mWordDao.allWords;
     }
 
-    val allWords
-        get() = _mAllWords
-
     fun insert(word: WordEntity) {
-        insertAsyncTask(_mWordDao).execute(word)
+        insertAsyncTask(mWordDao).execute(word)
     }
 
     class insertAsyncTask(val mAsyncTaskDao: WordDao) : AsyncTask<WordEntity, Void, Boolean>() {
