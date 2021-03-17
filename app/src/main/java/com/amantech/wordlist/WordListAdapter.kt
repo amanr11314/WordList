@@ -8,27 +8,28 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.amantech.wordlist.database.WordEntity
 
-class WordListAdapter(val context: Context, var mWords: List<WordEntity>) :
+class WordListAdapter(context: Context) :
     RecyclerView.Adapter<WordListAdapter.WordViewHolder>() {
-
-//    private lateinit var mWords: List<WordEntity>
+    var mInflater: LayoutInflater = LayoutInflater.from(context)
+    private var mWords: List<WordEntity>? = null
 
     class WordViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val wordItemView: TextView = view.findViewById(R.id.textView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
-        val itemView: View =
-            LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item, parent, false)
-        return WordListAdapter.WordViewHolder(itemView)
+//        val itemView: View =            LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item, parent, false)
+        val itemView: View = mInflater.inflate(R.layout.recyclerview_item, parent, false)
+//            LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item, parent, false)
+        return WordViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
         if (mWords != null) {
-            val current: WordEntity = mWords[position]
+            val current: WordEntity = mWords!![position]
             holder.wordItemView.text = current.word
         } else {
-            holder.wordItemView.text = "No Word"
+            holder.wordItemView.setText(R.string.Noword)
         }
     }
 
@@ -39,6 +40,8 @@ class WordListAdapter(val context: Context, var mWords: List<WordEntity>) :
 
 
     override fun getItemCount(): Int {
-        return mWords.size;
+        return if (mWords != null)
+            mWords!!.size;
+        else 1;
     }
 }

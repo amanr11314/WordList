@@ -9,11 +9,11 @@ import com.amantech.wordlist.repository.WordRepository
 class WordViewModel(application: Application) : ViewModel() {
 
     private val mRepository: WordRepository = WordRepository(application)
-    val allWords: LiveData<List<WordEntity>> = mRepository.mAllWords
+    val allWords: LiveData<List<WordEntity>>
+        get() = mRepository.mAllWords
 
-    fun insert(word: String) {
-        val newWord = WordEntity(word)
-        mRepository.insert(newWord)
+    fun insert(word: WordEntity) {
+        mRepository.insert(word)
     }
 
 }

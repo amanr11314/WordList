@@ -1,8 +1,10 @@
 package com.amantech.wordlist
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,11 +13,10 @@ import com.amantech.wordlist.database.WordEntity
 import com.amantech.wordlist.viewmodel.WordViewModel
 import com.amantech.wordlist.viewmodel.WordViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import java.sql.Time
 
 
 class MainActivity : AppCompatActivity() {
+    val NEW_WORD_ACTIVITY_REQUEST_CODE = 1
 
     private lateinit var mWordViewModel: WordViewModel
     private lateinit var mWordViewModelFactory: WordViewModelFactory
@@ -27,31 +28,46 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        //init View Model obejct
-        //use of view model factory to pass parameter to viewmodel
-        mWordViewModelFactory = WordViewModelFactory(application)
-        mWordViewModel =
-            ViewModelProvider(this, mWordViewModelFactory).get(WordViewModel::class.java)
 
         //Init UI
         recyclerView = findViewById(R.id.recyclerView)
-        adapter = WordListAdapter(this, listOf<WordEntity>())
+        adapter = WordListAdapter(this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         //Add click listener to FAB
-        //TODO: INSERT WORD INTO DB OPERATION ON FAB CLICK
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
+            val intent = Intent(this@MainActivity, NewWordActivity::class.java)
+            startActivityForResult(intent, NEW_WORD_ACTIVITY_REQUEST_CODE)
         }
+
+
+        //init View Model obejct
+        //use of view model factory to pass parameter to view model
+        mWordViewModelFactory = WordViewModelFactory(application)
+        mWordViewModel =
+            ViewModelProvider(this, mWordViewModelFactory).get(WordViewModel::class.java)
 
         //observer for livedata for wordlist
         mWordViewModel.allWords.observe(this, {
             adapter.setWords(it!!)
         })
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            val word = WordEntity(data!!.getStringExtra(NewWordActivity.EXTRA_REPLY)!!)
+            mWordViewModel.insert(word)
+        } else {
+            Toast.makeText(
+                applicationContext,
+                R.string.empty_not_saved,
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
 
