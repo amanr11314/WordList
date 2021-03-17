@@ -20,7 +20,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!--    <include layout="@layout/content_main" />-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -40,5 +39,14 @@
         android:layout_margin="@dimen/fab_margin"
         android:contentDescription="ADD"
         app:srcCompat="@drawable/ic__add_black" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="DELETE"
+        app:srcCompat="@drawable/ic_delete_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

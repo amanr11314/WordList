@@ -6,39 +6,31 @@ import android.os.AsyncTask
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Room
-import com.amantech.wordlist.database.WordDao
-import com.amantech.wordlist.database.WordEntity
-import com.amantech.wordlist.database.WordRoomDatabase
-import com.amantech.wordlist.database.getDatabase
+import com.amantech.wordlist.database.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class WordRepository(application: Application) {
     private var mWordDao: WordDao
+
     val db: WordRoomDatabase
 
     init {
-        db = getDatabase(application)
+        db = WordRoomDatabase.getDatabase(application)
         mWordDao = db.wordDao()
         db.close()
     }
+
+    suspend fun insertWord(wordEntity: WordEntity) = mWordDao.insert(wordEntity)
+
+    suspend fun deleteAllWords() = mWordDao.deleteAll()
 
     val mAllWords: LiveData<List<WordEntity>>
         get() {
             return mWordDao.allWords
         }
-
-
-    fun insert(word: WordEntity) {
-        val result = insertAsyncTask(mWordDao).execute(word).get()
-    }
-
-
-    class insertAsyncTask(private val mAsyncTaskDao: WordDao) :
-        AsyncTask<WordEntity, Void, Boolean>() {
-        override fun doInBackground(vararg params: WordEntity): Boolean {
-            mAsyncTaskDao.insert(params[0])
-            return true
-        }
-    }
 
 }

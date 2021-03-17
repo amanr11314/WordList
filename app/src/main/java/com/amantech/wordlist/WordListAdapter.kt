@@ -18,9 +18,7 @@ class WordListAdapter(context: Context) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
-//        val itemView: View =            LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item, parent, false)
         val itemView: View = mInflater.inflate(R.layout.recyclerview_item, parent, false)
-//            LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item, parent, false)
         return WordViewHolder(itemView)
     }
 
@@ -42,6 +40,6 @@ class WordListAdapter(context: Context) :
     override fun getItemCount(): Int {
         return if (mWords != null)
             mWords!!.size;
-        else 1;
+        else 0;
     }
 }

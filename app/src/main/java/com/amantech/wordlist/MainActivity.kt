@@ -13,6 +13,10 @@ import com.amantech.wordlist.database.WordEntity
 import com.amantech.wordlist.viewmodel.WordViewModel
 import com.amantech.wordlist.viewmodel.WordViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +26,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mWordViewModelFactory: WordViewModelFactory
     lateinit var recyclerView: RecyclerView
     lateinit var adapter: WordListAdapter
+    lateinit var fabDelete: FloatingActionButton
+
+    val uiscope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +41,16 @@ class MainActivity : AppCompatActivity() {
         adapter = WordListAdapter(this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
+        fabDelete = findViewById(R.id.fabDelete)
 
         //Add click listener to FAB
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
             val intent = Intent(this@MainActivity, NewWordActivity::class.java)
             startActivityForResult(intent, NEW_WORD_ACTIVITY_REQUEST_CODE)
+        }
+
+        fabDelete.setOnClickListener {
+            mWordViewModel.deleteAll()
         }
 
 
@@ -48,11 +60,23 @@ class MainActivity : AppCompatActivity() {
         mWordViewModel =
             ViewModelProvider(this, mWordViewModelFactory).get(WordViewModel::class.java)
 
-        //observer for livedata for wordlist
+        //observer for LiveData for wordlist
         mWordViewModel.allWords.observe(this, {
             adapter.setWords(it!!)
+            //launch suspend fun in a coroutine scope
+            uiscope.launch {
+                updateFABDelete(it.isNotEmpty())
+            }
         })
 
+    }
+
+    //to enable or disable delete all button
+    private suspend fun updateFABDelete(value: Boolean) {
+        //update ui on main thread
+        withContext(Dispatchers.Main) {
+            fabDelete.isEnabled = value
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
